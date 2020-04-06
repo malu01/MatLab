@@ -1,0 +1,64 @@
+clear;clc
+num = 10;
+
+for k = 1:4
+    n = num-1;
+    h = 1/(n+1); 
+    m = [-ones(1,n^2);-ones(1,n^2);4*ones(1,n^2);-ones(1,n^2);-ones(1,n^2)]';
+    A = spdiags(m,[-n,-1,0,1,n],n^2,n^2);
+    for i = 1:n-1
+        A(i*n,i*n+1) = 0;
+        A(i*n+1,i*n) = 0;
+    end
+    count = 1;
+    for i = 1:n
+        for j = 1:n
+            b(count) = 2*(pi^2)*sin(pi*i/(n+1))*sin(pi*j/(n+1))*h^2;
+            count = count + 1;
+        end
+    end
+    X = b/A;
+    count = 1;
+    M = zeros(n+2);
+    for i = 2:n+1
+        for j = 2:n+1
+            M(i,j) = X(count);
+            count = count + 1;
+        end
+    end
+ 
+    surf(M)
+    figure
+    %----误差分析----
+    x =linspace(0,1,n+2) ;
+    y = x;
+    for i = 1:n+2
+        for j = 1:n+2
+            error(i,j) = abs(M(i,j) - sin(x(i)*pi)*sin(pi*y(j)));
+        end
+    end
+    s = strcat('误差 err(10*2^',num2str(k),')为：',num2str(max(error(:))));
+    disp(s);    
+    division(k) = num;
+    compare(k) = max(error(:));
+    Cond(k) = condest(A);
+    num = num*2;
+end
+
+for k = 1:4
+    if k-1 ~= 0
+    s = strcat('err(10*2^',num2str(k-1),')/err(10*2^',num2str(k),')=',num2str(compare(k-1)/compare(k)));
+    disp(s);
+    end
+end
+
+for k = 1:4
+    s = strcat([],num2str(division(k)),'等分时，条件数为',num2str(Cond(k)));
+    disp(s);
+end
+plot(division(:),Cond(:))
+
+D = eig(A);
+if  D(:)>0
+    disp('yes');
+end
