@@ -1,0 +1,36 @@
+count = 1;
+%node
+for i = 1:101
+    for j = 1:101
+        node(count,:) = [j-1,i-1];
+        count = count +1;
+    end
+end
+%elem
+count = 1;
+for j = 1:100
+    for i = 1:100
+        elem(count,:) = [(j-1)*101+i,j*101+i+1,j*101+i];
+        count = count +1;
+        elem(count,:) = [(j-1)*101+i,(j-1)*101+i+1,j*101+i+1];
+        count = count +1;
+    end
+end
+%bdnode
+count = 1;
+bd = [0,100];
+for i = 1:length(node)
+    if any(ismember(bd,node(i,:)))
+       bdnode(count,:) = node(i,:);
+       count = count +1;
+    end
+end
+%bdelem
+count = 1;
+bd = [1:100, 101:101:10201, 102:101:10101, 10102:10200];
+for i = 1:length(elem)
+    if any(ismember(bd,elem(i,:)))
+       bdelem(count,:) = elem(i,:);
+       count = count +1;
+    end
+end
