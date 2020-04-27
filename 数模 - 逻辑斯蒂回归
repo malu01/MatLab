@@ -1,0 +1,60 @@
+clear;clc
+X = xlsread('C:\Users\马路\Desktop\a.xls');
+[m,n] = size(X);
+%归一化处理
+for i = 1:n-1
+X(:,i)=X(:,i)/max(X(:,i));
+end
+Y=X(:,n);
+X(:,n)=ones(m,1);
+%数据分类
+k=0.8*m;
+X1=X(1:k,:);
+Y1=Y(1:k,:);
+X2=X(k+1:end,:);
+Y2=Y(k+1:end,:);
+%初值
+thetab= zeros(1,n); 
+
+for num =1:5 %迭代次数
+    loss=0;
+    %目标函数
+    for i=1:k
+        xx=X1(i,1:n);
+        yy=Y1(i,1);
+        l=-yy*thetab * xx'+log(1+exp(thetab * xx'));
+        loss = loss+l;
+    end
+    %d1为一阶导数,d2为二阶导数
+    d1 = 0;d2 = 0;
+    for i = 1:k
+        xx=X1(i,1:n);
+        yy=Y1(i,1);
+        p = exp(thetab * xx')/(1+exp(thetab * xx'));
+        l1= xx*(yy - p);
+        d1 = d1-l1;
+        l2 = xx'*xx*p*(1-p);
+        d2 = d2 +l2;
+    end
+    %迭代
+    thetab = thetab - d1/d2;
+end
+
+%计算准确率
+count = 0;
+for yz = 0.01:0.01:1
+    acc=0;
+    for i=1:m-k
+        xx=X2(i,1:n)'; yy=Y2(i);
+        finil=exp(thetab * xx)/(1+exp(thetab * xx));
+        if finil>yz && yy==1
+            acc=acc+1;
+        end
+        if finil<=yz && yy==0
+            acc=acc+1;
+        end
+    count = count +1;
+    zql(count) = acc/(m-k);
+    end
+end
+zql = max(zql)
