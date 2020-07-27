@@ -1,0 +1,17 @@
+fbl = 1028;  
+t = 50;  
+[X, Y] = meshgrid(linspace(-2,2,fbl));
+C =  X + Y * 1i;
+z = C;
+N = zeros(fbl, fbl,3);
+for k = 1: t
+    z = z.^2 + C;
+    [x,y] = find(abs(z)>2);
+    color = rand(1,3);
+    for j = 1:length(x)
+    	N(x(j),y(j),:) = color;
+    end
+    z(abs(z) > 2) = 0;
+    C(abs(z) > 2) = 0;
+end
+imshow(N);
