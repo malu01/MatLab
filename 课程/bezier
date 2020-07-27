@@ -1,0 +1,49 @@
+function bezier(nn)
+    function d = dbx(n,a)%如果输入的是值，确定多边形顶点的坐标
+        tt=(0:n)*2*pi/n;
+        theta=(n-2)*pi/2/n;
+        rr=a/2/cos(theta);
+        x=rr*cos(tt);
+        y=rr*sin(tt);
+        d(:,1) = x;
+        d(:,2) = y;
+    end
+
+%-------主函数-------
+if length(nn) == 1%判断输入的是值还是矩阵
+    p = dbx(nn,1);
+    plot(p(:,1),p(:,2))
+    hold on
+    [n,m] = size(p);
+    n = n-1;
+    count = 1;
+    for t = 0:0.01:1%根据公式，对t进行离散
+        Sum = 0;
+        for k = 0:n
+            part = nchoosek(n,k)*t^k*(1-t)^(n-k)*p(k+1,:);
+            Sum = Sum + part;
+        end
+        r(count,:) = Sum;
+        count = count+1;
+    end
+    plot(r(:,1),r(:,2))%绘制正多边形的曲线图像
+    
+else%如果输入的是矩阵，根据所给的坐标绘图
+    [n,m] = size(nn);
+    count = 1;
+    for t = 0:0.01:1%根据公式，对t进行离散
+        Sum = 0;
+        for k = 1:n
+            part = nchoosek(n,k)*t^k*(1-t)^(n-k)*nn(k,:);
+            Sum = Sum + part;
+        end
+        r(count,:) = Sum;
+        count = count+1;
+    end
+    if m == 2
+        plot(r(:,1),r(:,2))%判断是三维还是二维
+    else
+        plot3(r(:,1),r(:,2),r(:,3))
+    end 
+end
+end
